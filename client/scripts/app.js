@@ -1,10 +1,4 @@
-// $('body').prepend("<div class='player'><iframe width='560' height='315' src='https://www.youtube.com/embed/dQw4w9WgXcQ\"></iframe></div>");
 
-// $('#main').append("<img src='http://netdna.walyou.netdna-cdn.com/wp-content/uploads//2013/08/Nerdy-Darth-Vader.jpg'>")
-
-// $('#main').append("<http://vignette1.wikia.nocookie.net/empireatwar/images/4/44/1756_-_empire_insignia_logo_star_wars.png'>")
-
-// http://vignette1.wikia.nocookie.net/empireatwar/images/4/44/1756_-_empire_insignia_logo_star_wars.png
 
 var app = {
   messages: {},
@@ -81,9 +75,9 @@ var app = {
     $('#chats').empty();
   },
 
-  addMessage: function(oneMessage) {
+  addMessage: function(message) {
 
-    $('#chats').append('<div><br>Username: ' + app.filter(oneMessage.username) + '<br>Text: ' + app.filter(oneMessage.text) + '<br>Roomname: ' + oneMessage.roomname + '</div>');
+    $('#chats').append('<div><br>Username: ' + app.filter(message.username) + '<br>Text: ' + app.filter(message.text) + '<br>Roomname: ' + message.roomname + '</div>');
   },
 
   addRoom: function(message) {
@@ -93,17 +87,11 @@ var app = {
 
   handleData: function(data) {
     //var filterData = app.filter(data);
+    app.clearMessages();
     app.renderMessages(data);
   },
 
-  filter: function(data) {
-    return data !== undefined ? data.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
-  },
-
-  order: function(data) {
-
-  }
-
+  filter: data => !data ? '' : data.length < 501 ? data.replace(/</g, '&lt;').replace(/>/g, '&gt;') : data.slice(0, 501).replace(/</g, '&lt;').replace(/>/g, '&gt;') + '... (<i>message exceeded character limit.</i>)'
 
 };
 
