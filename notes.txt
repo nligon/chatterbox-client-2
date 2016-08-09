@@ -1,0 +1,9 @@
+// iterate from right to left and append
+// auto scroll-down
+// text box
+// enforce character limit on input box.
+// button
+// ^ make these function (leave room, username default)
+// roomname dropdown & select
+// filter user messages before sending them 
+// put everything in contained 'chat' box
