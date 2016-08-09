@@ -2,23 +2,44 @@
 
 // $('#main').append("<img src='http://netdna.walyou.netdna-cdn.com/wp-content/uploads//2013/08/Nerdy-Darth-Vader.jpg'>")
 
+// $('#main').append("<http://vignette1.wikia.nocookie.net/empireatwar/images/4/44/1756_-_empire_insignia_logo_star_wars.png'>")
+
+// http://vignette1.wikia.nocookie.net/empireatwar/images/4/44/1756_-_empire_insignia_logo_star_wars.png
+
 var app = {
   messages: {},
 
   myMessage: {
-    username: 'Vader',
-    text: 'I am your father.',
+    username: 'Nathanael',
+    text: 'Test message, as requested!',
     roomname: 'lobby'
   },
 
-
   renderMessages: function(messages) {
+    console.log(messages);
     for (var i = 0; i < messages.length; i++) {
       app.addMessage(messages[i]);
     }
   },
 
-  init: function() {},
+  charInString: function(string) {
+    var chars = {};
+    for (var i = 0; i < string.length; i++) {
+      chars[string[i]] = true;
+    }
+    for (var j = 1; j < arguments.length; j++) {
+      if (chars[arguments[j]]) {
+        console.log(arguments[j], 'found');
+        return true;
+      }
+    }
+    return false;
+  },
+
+  init: function() {
+    app.fetch();
+    setInterval(app.fetch, 3000);
+  },
 
   send: function(message) {
     $.ajax({
@@ -29,6 +50,7 @@ var app = {
       contentType: 'application/json',
       success: function(data) {
         console.log('chatterbox: Message sent');
+        app.handleData(data.results);
         // app.fetch();
       },
       error: function(data) {
@@ -60,22 +82,46 @@ var app = {
   },
 
   addMessage: function(oneMessage) {
-    $('#chats').html('<div><br>Username: ' + oneMessage.username + '<br>Text: ' + oneMessage.text + '<br>Roomname: ' + oneMessage.roomname + '</div>');
+    $('#chats').append('<div><br>Username: ' + oneMessage.username + '<br>Text: ' + oneMessage.text + '<br>Roomname: ' + oneMessage.roomname + '</div>');
   },
 
   addRoom: function() {
     $('#roomSelect').append('<div><br>Username: ' + message.username + '<br>Text: ' + message.text + '<br>Roomname: ' + message.roomname + '</div>');
   },
 
-  handleData: function(data) {
-    // var filterData = app.filter(data);
-    app.renderMessages(data);
+  handleData: function(results) {
+    var filteredResults = app.filter(results);
+    app.clearMessages();
+    app.renderMessages(filteredResults);
   },
 
-  filter: function(data) {
-    for (var packet in data) {
-      if () {}
+  filter: function(results) {
+    console.log('data before cleanup:', results);
+    console.log('results length:', results.length);
+    // remove malicious lines
+    for (var i = 0; i < results.length; i++) {
+      var packet = results[i];
+      console.log('packet:', packet);
+      for (var key in packet) {
+        console.log('key, value:', key, packet[key]);
+
+        if (packet[key].includes("$", "{")) {
+          console.log('found $!');
+          // delete results.packet;
+          packet[key] = "Malicious code: " + String(packet[key]);
+        }
+
+        if (app.charInString(packet[key], '$', '{', '}')) {
+          console.log('found' + app.charInString(packet[key] + '!'))
+          packet[key] = "Malicious code found:", app.charInString(packet[key]);
+        }
+
+
+
+      }
     }
+    console.log('data after cleanup:', results);
+    return results;
   },
 
   order: function(data) {
@@ -85,5 +131,4 @@ var app = {
 
 };
 
-app.fetch();
-setInterval(app.fetch, 3000);
+app.init();
