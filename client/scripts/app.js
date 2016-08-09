@@ -60,22 +60,20 @@ var app = {
   },
 
   addMessage: function(oneMessage) {
-    $('#chats').html('<div><br>Username: ' + oneMessage.username + '<br>Text: ' + oneMessage.text + '<br>Roomname: ' + oneMessage.roomname + '</div>');
+    $('#chats').append('<div><br>Username: ' + app.filter(oneMessage.username) + '<br>Text: ' + app.filter(oneMessage.text) + '<br>Roomname: ' + oneMessage.roomname + '</div>');
   },
 
-  addRoom: function() {
+  addRoom: function(message) {
     $('#roomSelect').append('<div><br>Username: ' + message.username + '<br>Text: ' + message.text + '<br>Roomname: ' + message.roomname + '</div>');
   },
 
   handleData: function(data) {
-    // var filterData = app.filter(data);
+    //var filterData = app.filter(data);
     app.renderMessages(data);
   },
 
   filter: function(data) {
-    for (var packet in data) {
-      if () {}
-    }
+    return data !== undefined ? data.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
   },
 
   order: function(data) {
