@@ -31,6 +31,8 @@ var app = {
   },
 
   init: function() {
+    var username = app.getUsername();
+
     app.fetch();
     setInterval(app.fetch, 3000);
   },
@@ -45,7 +47,6 @@ var app = {
       success: function(data) {
         console.log('chatterbox: Message sent');
         app.handleData(data.results);
-        // app.fetch();
       },
       error: function(data) {
         console.error('chatterbox: Failed to send message', data);
@@ -86,12 +87,17 @@ var app = {
 
 
   handleData: function(data) {
-    //var filterData = app.filter(data);
     app.clearMessages();
     app.renderMessages(data);
   },
 
-  filter: data => !data ? '' : data.length < 501 ? data.replace(/</g, '&lt;').replace(/>/g, '&gt;') : data.slice(0, 501).replace(/</g, '&lt;').replace(/>/g, '&gt;') + '... (<i>message exceeded character limit.</i>)'
+  filter: data => !data ? '' : data.length < 501 ? data.replace(/</g, '&lt;').replace(/>/g, '&gt;') : data.slice(0, 501).replace(/</g, '&lt;').replace(/>/g, '&gt;') + '... (<i>message exceeded character limit.</i>)',
+
+  getUsername: function() {
+    var url = document.URL;
+    var index = url.indexOf('username=');
+    return url.slice(index + 9);
+  }
 
 };
 
