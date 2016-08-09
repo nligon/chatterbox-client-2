@@ -1,6 +1,28 @@
+$(document).ready(function() {
+  $('#userSend').on('click', app.createSendMessage);
+});
 
+function myFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// Close the dropdown menu if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn')) {
+
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+}
 
 var app = {
+
   messages: {},
 
   myMessage: {
@@ -10,29 +32,12 @@ var app = {
   },
 
   renderMessages: function(messages) {
-    console.log(messages);
-    for (var i = 0; i < messages.length; i++) {
+    for (var i = 19; i >= 0; i--) {
       app.addMessage(messages[i]);
     }
   },
 
-  charInString: function(string) {
-    var chars = {};
-    for (var i = 0; i < string.length; i++) {
-      chars[string[i]] = true;
-    }
-    for (var j = 1; j < arguments.length; j++) {
-      if (chars[arguments[j]]) {
-        console.log(arguments[j], 'found');
-        return true;
-      }
-    }
-    return false;
-  },
-
   init: function() {
-    var username = app.getUsername();
-
     app.fetch();
     setInterval(app.fetch, 3000);
   },
@@ -46,7 +51,6 @@ var app = {
       contentType: 'application/json',
       success: function(data) {
         console.log('chatterbox: Message sent');
-        app.handleData(data.results);
       },
       error: function(data) {
         console.error('chatterbox: Failed to send message', data);
@@ -97,6 +101,15 @@ var app = {
     var url = document.URL;
     var index = url.indexOf('username=');
     return url.slice(index + 9);
+  },
+
+  createSendMessage: function() {
+    var message = {};
+    message.username = app.getUsername();
+    message.text = $('#textbox')[0].value;
+    message.roomname = 'lobby';
+    console.log(message);
+    app.send(message);
   }
 
 };
