@@ -1,39 +1,20 @@
-// YOUR CODE HERE:
+// $('body').prepend("<div class='player'><iframe width='560' height='315' src='https://www.youtube.com/embed/dQw4w9WgXcQ\"></iframe></div>");
 
-var w1 = function() {
-  (setTimeout(function() {
-    console.log('console meow');
-    return 'return meow';
-  }).bind(this), 1000);
-};
-
-var catSay = function() {
-  console.log('console meow');
-  return 'meow';
-};
+// $('#main').append("<img src='http://netdna.walyou.netdna-cdn.com/wp-content/uploads//2013/08/Nerdy-Darth-Vader.jpg'>")
 
 var app = {
   messages: {},
-  // myMessage: {
-  //   username: 'Mel Brooks',
-  //   text: 'It\'s good to be the king',
-  //   roomname: 'lobby'
-  // },
+
+  myMessage: {
+    username: 'Vader',
+    text: 'I am your father.',
+    roomname: 'lobby'
+  },
 
 
-
-  renderMessages: function() {
-    app.fetch();
-    if (app.messages !== undefined) {
-      console.log(app.messages);
-      for (var key in app.messages) {
-        console.log(app.messages[key]);
-        app.addMessage(app.messages[key]);
-      }
-      return "Messages looped and run through addMessage.";
-
-    } else {
-      return "Messages not ready yet.";
+  renderMessages: function(messages) {
+    for (var i = 0; i < messages.length; i++) {
+      app.addMessage(messages[i]);
     }
   },
 
@@ -48,7 +29,7 @@ var app = {
       contentType: 'application/json',
       success: function(data) {
         console.log('chatterbox: Message sent');
-        app.fetch();
+        // app.fetch();
       },
       error: function(data) {
         console.error('chatterbox: Failed to send message', data);
@@ -56,18 +37,16 @@ var app = {
     });
   },
 
-  fetch: function(data) {
+  fetch: function(url = 'https://api.parse.com/1/classes/messages') {
     console.log('fetching!');
     $.ajax({
       // This is the url you should use to communicate with the parse API server.
-      url: 'https://api.parse.com/1/classes/messages',
+      url: url,
       type: 'GET',
-      data: { key: 'value' },
       contentType: 'application/json',
       success: function(data) {
-        // console.log({ data: data });
         app.messages = data.results;
-        // console.log('messages from fetch:', app.messages);
+        app.handleData(data.results);
       },
       error: function(data) {
         // console.error('chatterbox: Failed to fetch', data);
@@ -79,11 +58,32 @@ var app = {
   clearMessages: function() {
     $('#chats').empty();
   },
+
   addMessage: function(oneMessage) {
-    $('#chats').append('<div><br>Username: ' + oneMessage.username + '<br>Text: ' + oneMessage.text + '<br>Roomname: ' + oneMessage.roomname + '</div>');
+    $('#chats').html('<div><br>Username: ' + oneMessage.username + '<br>Text: ' + oneMessage.text + '<br>Roomname: ' + oneMessage.roomname + '</div>');
   },
+
   addRoom: function() {
     $('#roomSelect').append('<div><br>Username: ' + message.username + '<br>Text: ' + message.text + '<br>Roomname: ' + message.roomname + '</div>');
+  },
+
+  handleData: function(data) {
+    // var filterData = app.filter(data);
+    app.renderMessages(data);
+  },
+
+  filter: function(data) {
+    for (var packet in data) {
+      if () {}
+    }
+  },
+
+  order: function(data) {
+
   }
 
+
 };
+
+app.fetch();
+setInterval(app.fetch, 3000);
