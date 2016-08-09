@@ -82,46 +82,22 @@ var app = {
   },
 
   addMessage: function(oneMessage) {
-    $('#chats').append('<div><br>Username: ' + oneMessage.username + '<br>Text: ' + oneMessage.text + '<br>Roomname: ' + oneMessage.roomname + '</div>');
+
+    $('#chats').append('<div><br>Username: ' + app.filter(oneMessage.username) + '<br>Text: ' + app.filter(oneMessage.text) + '<br>Roomname: ' + oneMessage.roomname + '</div>');
   },
 
-  addRoom: function() {
+  addRoom: function(message) {
     $('#roomSelect').append('<div><br>Username: ' + message.username + '<br>Text: ' + message.text + '<br>Roomname: ' + message.roomname + '</div>');
   },
 
-  handleData: function(results) {
-    var filteredResults = app.filter(results);
-    app.clearMessages();
-    app.renderMessages(filteredResults);
+
+  handleData: function(data) {
+    //var filterData = app.filter(data);
+    app.renderMessages(data);
   },
 
-  filter: function(results) {
-    console.log('data before cleanup:', results);
-    console.log('results length:', results.length);
-    // remove malicious lines
-    for (var i = 0; i < results.length; i++) {
-      var packet = results[i];
-      console.log('packet:', packet);
-      for (var key in packet) {
-        console.log('key, value:', key, packet[key]);
-
-        if (packet[key].includes("$", "{")) {
-          console.log('found $!');
-          // delete results.packet;
-          packet[key] = "Malicious code: " + String(packet[key]);
-        }
-
-        if (app.charInString(packet[key], '$', '{', '}')) {
-          console.log('found' + app.charInString(packet[key] + '!'))
-          packet[key] = "Malicious code found:", app.charInString(packet[key]);
-        }
-
-
-
-      }
-    }
-    console.log('data after cleanup:', results);
-    return results;
+  filter: function(data) {
+    return data !== undefined ? data.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
   },
 
   order: function(data) {
