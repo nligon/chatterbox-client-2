@@ -1,15 +1,18 @@
 // structure: init --> fetch(ajax) --> handleMessages --> trimIDs (using ID object, adds new IDs and throws out old messages) --> filterMessagesMessages --> storeMessages --> renderMessages
 
+$(document).ready(function() {
+  $('#userSend').on('click', app.createSendMessage);
+  $("#chats").prop({ scrollTop: $("#chats").prop("scrollHeight") });
+});
+
+
+
 var app = {
   storage: {},
 
   idStorage: {},
 
   room: undefined,
-
-  convertTime: function() {
-
-  },
 
   addRoom: function(message) {
     $('#roomSelect').append('<div><br>Username: ' + message.username + '<br>Text: ' + message.text + '<br>Roomname: ' + message.roomname + '</div>');
@@ -50,7 +53,7 @@ var app = {
   getUsername: function() {
     var url = document.URL;
     var index = url.indexOf('username=');
-    return url.slice(index + 9);
+    return url.slice(index + 9).replace(/%20/g, ' ');
   },
 
   handleMessages: function(newMessages) {
@@ -127,13 +130,3 @@ var app = {
 
 app.init();
 
-
-
-
-var msg = function(string) {
-  app.send({
-    username: 'Nathanael',
-    text: string,
-    roomname: 'lobby'
-  });
-};
