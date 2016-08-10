@@ -1,33 +1,68 @@
-
+// structure: init --> fetch(ajax) --> handleMessages --> trimIDs (using ID object, adds new IDs and throws out old messages) --> filterMessagesMessages --> storeMessages --> renderMessages
 
 var app = {
-  messages: {},
+  storage: {},
 
-  myMessage: {
-    username: 'Nathanael',
-    text: 'Test message, as requested!',
-    roomname: 'lobby'
+  idStorage: {},
+
+  room: undefined,
+
+  convertTime: function() {
+
   },
 
-  renderMessages: function(messages) {
-    console.log(messages);
-    for (var i = 0; i < messages.length; i++) {
-      app.addMessage(messages[i]);
-    }
+  addRoom: function(message) {
+    $('#roomSelect').append('<div><br>Username: ' + message.username + '<br>Text: ' + message.text + '<br>Roomname: ' + message.roomname + '</div>');
   },
 
-  charInString: function(string) {
-    var chars = {};
-    for (var i = 0; i < string.length; i++) {
-      chars[string[i]] = true;
-    }
-    for (var j = 1; j < arguments.length; j++) {
-      if (chars[arguments[j]]) {
-        console.log(arguments[j], 'found');
-        return true;
+  appendMessage: function(message) {
+    $('#chats').append('<br><div style=";padding:10px;border:1px solid black;"><br><b>' + app.filterMessages(message.username) + ': </b>' + app.filterMessages(message.text) + '<br><i><small>' + app.filterMessages(message.roomname) + ', ' + app.convertTime(message.createdAt.slice(11, 13)) + message.createdAt.slice(13, 19) + '</small></i></div>');
+  },
+
+  convertTime: function(hour) {
+    return (Number(hour) + 5) > 12 ? String((Number(hour) + 5) - 12) : String((Number(hour) + 5));
+  },
+
+  clearMessages: function() {
+    $('#chats').empty();
+  },
+
+  fetch: function(url = 'https://api.parse.com/1/classes/messages') {
+    $.ajax({
+      url: url,
+      type: 'GET',
+      contentType: 'application/json',
+      success: function(data) {
+        if (data.results.length) {
+          app.handleMessages(data.results);
+        }
+      },
+      error: function(data) {
+        console.log('Error:', data);
+      }
+    });
+  },
+
+  filterMessages: function(message) {
+    return !message ? '' : message.length < 501 ? message.replace(/</g, '&lt;').replace(/>/g, '&gt;') : message.slice(0, 501).replace(/</g, '&lt;').replace(/>/g, '&gt;') + '... (<i>message exceeded character limit.</i>)';
+  },
+
+  getUsername: function() {
+    var url = document.URL;
+    var index = url.indexOf('username=');
+    return url.slice(index + 9);
+  },
+
+  handleMessages: function(newMessages) {
+    newMessages = app.trimMessages(newMessages);
+    for (var i = 0; i < newMessages.length; i++) {
+      for (var key in newMessages[i]) {
+        newMessages[i][key] = app.filterMessages(newMessages[i][key]);
       }
     }
-    return false;
+    // console.log(newMessages);
+    app.storeMessages(newMessages);
+    app.renderMessages(newMessages);
   },
 
   init: function() {
@@ -37,6 +72,20 @@ var app = {
     setInterval(app.fetch, 3000);
   },
 
+  renderMessages: function(messageArray) {
+    for (var i = 0; i < messageArray.length; i++) {
+      if (app.room === undefined || app.room === messageArray[i].roomname) {
+        app.appendMessage(messageArray[i]);
+      }
+    }
+  },
+
+  renderRoom: function(roomname) {
+    app.room = roomname;
+    app.clearMessages();
+    app.renderMessages(app.storage[roomname]);
+  },
+
   send: function(message) {
     $.ajax({
       // This is the url you should use to communicate with the parse API server.
@@ -44,61 +93,47 @@ var app = {
       type: 'POST',
       data: JSON.stringify(message),
       contentType: 'application/json',
-      success: function(data) {
-        console.log('chatterbox: Message sent');
-        app.handleData(data.results);
-      },
+      success: function(data) {},
       error: function(data) {
         console.error('chatterbox: Failed to send message', data);
       }
     });
   },
 
-  fetch: function(url = 'https://api.parse.com/1/classes/messages') {
-    console.log('fetching!');
-    $.ajax({
-      // This is the url you should use to communicate with the parse API server.
-      url: url,
-      type: 'GET',
-      contentType: 'application/json',
-      success: function(data) {
-        app.messages = data.results;
-        app.handleData(data.results);
-      },
-      error: function(data) {
-        // console.error('chatterbox: Failed to fetch', data);
+  storeMessages: function(newMessages) {
+    for (var i = 0; i < newMessages.length; i++) {
+      if (app.storage[newMessages[i]['roomname']]) {
+        app.storage[newMessages[i]['roomname']].push(newMessages[i]);
+      } else {
+        app.storage[newMessages[i]['roomname']] = [newMessages[i]];
       }
-    });
-
+    }
   },
 
-  clearMessages: function() {
-    $('#chats').empty();
-  },
-
-  addMessage: function(message) {
-
-    $('#chats').append('<div><br>Username: ' + app.filter(message.username) + '<br>Text: ' + app.filter(message.text) + '<br>Roomname: ' + message.roomname + '</div>');
-  },
-
-  addRoom: function(message) {
-    $('#roomSelect').append('<div><br>Username: ' + message.username + '<br>Text: ' + message.text + '<br>Roomname: ' + message.roomname + '</div>');
-  },
-
-
-  handleData: function(data) {
-    app.clearMessages();
-    app.renderMessages(data);
-  },
-
-  filter: data => !data ? '' : data.length < 501 ? data.replace(/</g, '&lt;').replace(/>/g, '&gt;') : data.slice(0, 501).replace(/</g, '&lt;').replace(/>/g, '&gt;') + '... (<i>message exceeded character limit.</i>)',
-
-  getUsername: function() {
-    var url = document.URL;
-    var index = url.indexOf('username=');
-    return url.slice(index + 9);
+  trimMessages: function(newMessages) {
+    for (var i = 0; i < newMessages.length; i++) {
+      // if ID not found, store ID
+      if (!app.idStorage[newMessages[i].objectId]) {
+        app.idStorage[newMessages[i].objectId] = true;
+      } else {
+        // if ID found, remove all ID's from newMessages, from this on to the right
+        newMessages = newMessages.slice(0, i);
+      }
+    }
+    return newMessages;
   }
 
 };
 
 app.init();
+
+
+
+
+var msg = function(string) {
+  app.send({
+    username: 'Nathanael',
+    text: string,
+    roomname: 'lobby'
+  });
+};
