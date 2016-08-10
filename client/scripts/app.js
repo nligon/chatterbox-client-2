@@ -22,12 +22,27 @@ var app = {
     $('#chats').append('<br><div style=";padding:10px;border:1px solid black;"><br><b>' + app.filterMessages(message.username) + ': </b>' + app.filterMessages(message.text) + '<br><i><small>' + app.filterMessages(message.roomname) + ', ' + app.convertTime(message.createdAt.slice(11, 13)) + message.createdAt.slice(13, 19) + '</small></i></div>');
   },
 
-  convertTime: function(hour) {
-    return (Number(hour) + 5) > 12 ? String((Number(hour) + 5) - 12) : String((Number(hour) + 5));
+  channels: function(channels) {
+    for (var i = 0; i < channels.length; i++) {
+      $('#channel-bar').append('<div class="channels">' + channels[i] + '</div>');
+    }
   },
 
   clearMessages: function() {
     $('#chats').empty();
+  },
+  
+  convertTime: function(hour) {
+    return (Number(hour) + 5) > 12 ? String((Number(hour) + 5) - 12) : String((Number(hour) + 5));
+  },
+
+  createSendMessage: function() {
+    var message = {};
+    message.username = app.getUsername();
+    message.text = $('#textbox')[0].value;
+    message.roomname = 'lobby';
+    console.log(message);
+    app.send(message);
   },
 
   fetch: function(url = 'https://api.parse.com/1/classes/messages') {
