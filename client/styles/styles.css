@@ -55,13 +55,7 @@ body {
     line-height: 13px;
 }
 
-form {
-    padding: 20px;
-    padding-left: 0;
-    margin-bottom: 20px;
-}
-
-form input[type=text] {
+input[type=text] {
     margin-right: 10px;
     width: 70%;
     font-size: 12px;
@@ -103,7 +97,7 @@ form input[type=text] {
     width: calc(100% - 220px);
 }
 
-#left-bar {
+#leftBar {
     width: 220px;
     position: relative;
     height: 100%;
@@ -131,10 +125,9 @@ form input[type=text] {
 #userInput {
     width: 75%;
     float: left;
-}
-
-.channels {
-    
+    padding: 20px;
+    padding-left: 0;
+    margin-bottom: 20px;
 }
 
 #sideHeader {

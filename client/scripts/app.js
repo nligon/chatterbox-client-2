@@ -2,7 +2,19 @@
 
 $(document).ready(function() {
   $('#userSend').on('click', app.createSendMessage);
-  $("#chats").prop({ scrollTop: $("#chats").prop("scrollHeight") });
+
+  $('#chats').prop({ scrollTop: $('#chats').prop('scrollHeight') });
+
+  $('#textbox').keyup(function(event) {
+    if (event.keyCode === 13) {
+      $('#userSend').click();
+    }
+  });
+
+  $('#roomBar').on('click', 'div.rooms', function(event) {
+    var room = $(this).data('room');
+    app.renderRoom(room);
+  });
 });
 
 
@@ -22,16 +34,14 @@ var app = {
     $('#chats').append('<br><div style=";padding:10px;border:1px solid black;"><br><b>' + app.filterMessages(message.username) + ': </b>' + app.filterMessages(message.text) + '<br><i><small>' + app.filterMessages(message.roomname) + ', ' + app.convertTime(message.createdAt.slice(11, 13)) + message.createdAt.slice(13, 19) + '</small></i></div>');
   },
 
-  channels: function(channels) {
-    for (var i = 0; i < channels.length; i++) {
-      $('#channel-bar').append('<div class="channels">' + channels[i] + '</div>');
-    }
+  appendRoom: function(room) {
+    $('#roomBar').append('<div class="rooms" data-room="' + room + '">' + room + '</div>');
   },
 
   clearMessages: function() {
     $('#chats').empty();
   },
-  
+
   convertTime: function(hour) {
     return (Number(hour) + 5) > 12 ? String((Number(hour) + 5) - 12) : String((Number(hour) + 5));
   },
@@ -41,7 +51,7 @@ var app = {
     message.username = app.getUsername();
     message.text = $('#textbox')[0].value;
     message.roomname = 'lobby';
-    console.log(message);
+    $('#textbox').val('');
     app.send(message);
   },
 
@@ -51,9 +61,7 @@ var app = {
       type: 'GET',
       contentType: 'application/json',
       success: function(data) {
-        if (data.results.length) {
-          app.handleMessages(data.results);
-        }
+        app.handleMessages(data.results);
       },
       error: function(data) {
         console.log('Error:', data);
@@ -72,13 +80,13 @@ var app = {
   },
 
   handleMessages: function(newMessages) {
+    console.log('Handling messages');
     newMessages = app.trimMessages(newMessages);
     for (var i = 0; i < newMessages.length; i++) {
       for (var key in newMessages[i]) {
         newMessages[i][key] = app.filterMessages(newMessages[i][key]);
       }
     }
-    // console.log(newMessages);
     app.storeMessages(newMessages);
     app.renderMessages(newMessages);
   },
@@ -124,6 +132,7 @@ var app = {
         app.storage[newMessages[i]['roomname']].push(newMessages[i]);
       } else {
         app.storage[newMessages[i]['roomname']] = [newMessages[i]];
+        app.appendRoom(newMessages[i]['roomname']);
       }
     }
   },
