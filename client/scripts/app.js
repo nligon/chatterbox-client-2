@@ -76,7 +76,7 @@ var app = {
   },
 
   renderMessages: function(messageArray) {
-    for (var i = 0; i < messageArray.length; i++) {
+    for (var i = messageArray.length - 1; i >= 0; i--) {
       if (app.room === undefined || app.room === messageArray[i].roomname) {
         app.appendMessage(messageArray[i]);
       }
@@ -104,7 +104,7 @@ var app = {
   },
 
   storeMessages: function(newMessages) {
-    for (var i = 0; i < newMessages.length; i++) {
+    for (var i = newMessages.length - 1; i >= 0; i--) {
       if (app.storage[newMessages[i]['roomname']]) {
         app.storage[newMessages[i]['roomname']].push(newMessages[i]);
       } else {
