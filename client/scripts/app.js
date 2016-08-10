@@ -2,24 +2,7 @@ $(document).ready(function() {
   $('#userSend').on('click', app.createSendMessage);
 });
 
-function myFunction() {
-    document.getElementById("myDropdown").classList.toggle("show");
-}
-
-// Close the dropdown menu if the user clicks outside of it
-window.onclick = function(event) {
-  if (!event.target.matches('.dropbtn')) {
-
-    var dropdowns = document.getElementsByClassName("dropdown-content");
-    var i;
-    for (i = 0; i < dropdowns.length; i++) {
-      var openDropdown = dropdowns[i];
-      if (openDropdown.classList.contains('show')) {
-        openDropdown.classList.remove('show');
-      }
-    }
-  }
-}
+$("#chats").prop({ scrollTop: $("#chats").prop("scrollHeight") });
 
 var app = {
 
@@ -32,7 +15,7 @@ var app = {
   },
 
   renderMessages: function(messages) {
-    for (var i = 19; i >= 0; i--) {
+    for (var i = Math.min(19, messages.length - 1); i >= 0; i--) {
       app.addMessage(messages[i]);
     }
   },
@@ -81,8 +64,7 @@ var app = {
   },
 
   addMessage: function(message) {
-
-    $('#chats').append('<div><br>Username: ' + app.filter(message.username) + '<br>Text: ' + app.filter(message.text) + '<br>Roomname: ' + message.roomname + '</div>');
+    $('#chats').append('<br><div style=";padding:10px;border:1px solid black;"><br><b>' + app.filter(message.username) + ': </b>' + app.filter(message.text) + '<br><i><small>' + app.filter(message.roomname) + '</small></i></div>');
   },
 
   addRoom: function(message) {
@@ -100,7 +82,7 @@ var app = {
   getUsername: function() {
     var url = document.URL;
     var index = url.indexOf('username=');
-    return url.slice(index + 9);
+    return url.slice(index + 9).replace(/%20/g, ' ');
   },
 
   createSendMessage: function() {
@@ -110,6 +92,12 @@ var app = {
     message.roomname = 'lobby';
     console.log(message);
     app.send(message);
+  },
+
+  channels: function(channels) {
+    for (var i = 0; i < channels.length; i++) {
+      $('#channel-bar').append('<div class="channels">' + channels[i] + '</div>');
+    }
   }
 
 };
