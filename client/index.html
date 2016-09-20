@@ -1,21 +1,41 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>chatterbox</title>
-    <link rel="stylesheet" href="styles/styles.css">
 
-    <!-- dependencies -->
-    <script src="bower_components/jquery/dist/jquery.js"></script>
-    <!-- your scripts -->
-    <script src="env/config.js"></script>
-    <script src="scripts/app.js"></script>
-  </head>
-  <body>
-    <div id="main">
-      <h1>chatterbox</h1>
-      <!-- Your HTML goes here! -->
+<head>
+  <meta charset="utf-8">
+  <title>chatterbox</title>
+  <link rel="stylesheet" href="styles/styles.css">
+  <!-- dependencies -->
+  <script src="bower_components/underscore/underscore-min.js"></script>
+  <script src="bower_components/jquery/dist/jquery.js"></script>
+  <!-- your scripts -->
+  <script src="env/config.js"></script>
+  <script src="scripts/app.js"></script>
+</head>
+
+<body>
+  </div>
+  <div id="leftBar">
+    <div id="sideHeader">
     </div>
-    <div id="chats"></div>
-  </body>
+    <div id="roomBar">
+      
+    </div>
+  </div>
+  <div id="main">
+    <h1>chatterbox</h1>
+  </div>
+  <div id="roomSelect"></div>
+  <div id="chats"></div>
+  <div id="message">
+    <div id="userSubmits">
+      <div id="userInput">
+        <!-- <input type="text" name="user" maxlength="50"> -->
+        <input id="textbox" type="text" name="userMessage" maxlength="500" placeholder="Type your message here..."><br>
+      </div>
+      <div id="userSend">Send</div>
+    </div>
+  </div>
+</body>
+
 </html>

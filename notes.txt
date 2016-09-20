@@ -1,0 +1,10 @@
+// iterate messages object from right to left and append
+// auto scroll-down
+// enforce character limit on input box.
+// ^ make these function (leave room, username default)
+// roomname scrollbar & select
+// filter user messages before sending them 
+// put everything in contained 'chat' box
+// css
+// implement a 'no spam' feature where if users type the same things many times over, they don't get appended
+// show time stamps on messages and render in a hidden css class that only displays on mouseover
